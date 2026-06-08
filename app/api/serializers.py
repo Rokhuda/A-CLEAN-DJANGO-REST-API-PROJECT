@@ -1,6 +1,6 @@
 from django.db.models import Sum
 from rest_framework import serializers
-from app.domain.models import Task, Sprint
+from app.domain.models import Task, Sprint, Project
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -66,3 +66,18 @@ class SprintSerializer(serializers.ModelSerializer):
 
     def get_completed_story_points(self, obj):
         return obj.tasks.filter(completed=True).aggregate(total=Sum('story_points'))['total'] or 0
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = [
+            'id',
+            'name',
+            'description',
+            'owner',
+            'is_archived',
+            'created_at',
+            'updated_at',
+        ]
+        read_only_fields = ['id', 'owner', 'created_at', 'updated_at']

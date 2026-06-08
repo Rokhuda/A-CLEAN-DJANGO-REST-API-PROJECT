@@ -2,8 +2,8 @@ from rest_framework import viewsets, permissions, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.utils import timezone
-from app.domain.models import Task, Sprint
-from app.api.serializers import TaskSerializer, SprintSerializer
+from app.domain.models import Task, Sprint, Project
+from app.api.serializers import TaskSerializer, SprintSerializer, ProjectSerializer
 from rest_framework.pagination import PageNumberPagination
 
 
@@ -75,3 +75,20 @@ class SprintViewSet(viewsets.ModelViewSet):
     def metrics(self, request, pk=None):
         sprint = self.get_object()
         return Response(sprint.get_metrics())
+
+
+class ProjectViewSet(viewsets.ModelViewSet):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'description']
+    ordering_fields = ['name', 'created_at']
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Project.objects.all()
+        return Project.objects.filter(owner=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
