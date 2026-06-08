@@ -51,6 +51,7 @@ README.md
 
 ## API Documentation
 - Open Swagger UI at: `http://127.0.0.1:8000/swagger/`
+- To view the TaskFlow API site in your browser, start the server and visit `http://127.0.0.1:8000/swagger/`.
 
 ## Testing
 - Run all tests: `pytest -q`
